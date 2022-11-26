@@ -1,16 +1,17 @@
+import uvicorn
 from fastapi import FastAPI
 
-app = FastAPI()
-
-@app.get("/")
-def index():
-    return {"index": "FastAPI 안녕"}
+from config import get_env
 
 
-@app.get("/math/sum")
-def math_sum(number_1: int, number_2: int):
-    return {"result": number_1 + number_2}
+def start_app():
+    app = FastAPI()
+    env = get_env()
+    for i in env.__dict__.items():
+        print(i)
+    print()
+    return app
 
-@app.get("/math/mul")
-def math_mul(number_1: int, number_2: int = 3):
-    return {"result": number_1 * number_2}
+
+if __name__ == "__main__":
+    uvicorn.run("main:start_app", host="0.0.0.0", port=8000, reload=True, factory=True)
