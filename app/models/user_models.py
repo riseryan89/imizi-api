@@ -5,7 +5,14 @@ from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, DateTime, E
 from sqlalchemy.orm import relationship, Session
 
 from app.models.base_model import Base
-from app.utils.auth_utils import hash_password, create_token, decode_token, generate_random_string
+from app.utils.auth_utils import (
+    hash_password,
+    create_token,
+    decode_token,
+    generate_random_string,
+    hash_string,
+    get_current_timestamp,
+)
 from config import get_env
 
 
@@ -94,6 +101,28 @@ class APIKeys(Base):
         session.add(self)
         session.commit()
         return self
+
+    @classmethod
+    def validate_signature(cls, access_key: str, ts: int, signature: str, session: Session):
+        get_api_key = session.query(cls).filter_by(access_key=access_key, deleted_at=None).first()
+        reproduced_signature = hash_string(
+            {
+                "access_key": access_key,
+                "ts": ts,
+            },
+            get_api_key.secret_key,
+        )
+        if reproduced_signature != signature:
+            print("signature not match")
+            return False
+        if ts < int(get_current_timestamp()) - 500:
+            print(ts, int(get_current_timestamp()))
+            print("timestamp expired")
+            return False
+        if ts > int(get_current_timestamp()):
+            print("timestamp not valid")
+            return False
+        return True
 
 
 class APIKeysWhitelist(Base):

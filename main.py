@@ -7,6 +7,7 @@ from sqlalchemy import text
 from config import get_env
 from app.db.connection import db
 from app.api.user_api import user
+from app.api.image_api import image
 
 
 def start_app():
@@ -18,6 +19,7 @@ def start_app():
     # print(session.query(text("select 1")))
 
     app.include_router(user, prefix="/users", tags=["Users"])
+    app.include_router(image, prefix="/images", tags=["Images"])
 
     return app
 
