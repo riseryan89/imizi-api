@@ -1,12 +1,12 @@
-from enum import Enum
+import enum
 
-from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, DateTime
+from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, DateTime, Enum
 from sqlalchemy.orm import relationship, Session
 
 from app.models.base_model import Base
 
 
-class UserStatus(str, Enum):
+class UserStatus(str, enum.Enum):
     ACTIVE = "ACTIVE"
     INACTIVE = "INACTIVE"
     DELETED = "DELETED"
@@ -16,7 +16,7 @@ class Users(Base):
     __tablename__ = "users"
     email = Column(String(64), nullable=False)
     pw = Column(String(256), nullable=False)
-    status = Column(Enum(UserStatus), native_enum=False, length=50, nullable=False)
+    status = Column(Enum(UserStatus, native_enum=False, length=50), nullable=False, default=UserStatus.ACTIVE)
     payplan_id = Column(ForeignKey("users_pay_plans.id"), nullable=False)
     is_admin = Column(Boolean, nullable=False, default=False)
     api_keys = relationship("APIKeys", back_populates="users")
