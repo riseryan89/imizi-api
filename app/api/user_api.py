@@ -1,7 +1,5 @@
-# create user api endpoints
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-
 from app import models, schemas
 from app.db.connection import db
 from app.schemas import UsersREQ
