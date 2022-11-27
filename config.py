@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM = "HS256"
     JWT_SECRET_KEY = os.getenv("JWT_SECRET", "imizi-secret")
     ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 1  # one day
+    REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 60  # sixty day
 
     DB_URL: str = ""
     DB_POOL_RECYCLE: Optional[int] = 900
