@@ -24,6 +24,15 @@ class UsersRES(BaseModel):
         orm_mode = True
 
 
+class Token(BaseModel):
+    access_token: str
+    refresh_token: str | None
+
+
+class RefreshToken(BaseModel):
+    refresh_token: str
+
+
 class UsersREQ(BaseModel):
     email: EmailStr
     pw: str
