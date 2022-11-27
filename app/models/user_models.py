@@ -1,12 +1,13 @@
-from enum import Enum
+import enum
 
-from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, DateTime
+from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, DateTime, Enum
 from sqlalchemy.orm import relationship, Session
 
 from app.models.base_model import Base
+from app.utils.auth_utils import hash_password
 
 
-class UserStatus(str, Enum):
+class UserStatus(str, enum.Enum):
     ACTIVE = "ACTIVE"
     INACTIVE = "INACTIVE"
     DELETED = "DELETED"
@@ -16,11 +17,32 @@ class Users(Base):
     __tablename__ = "users"
     email = Column(String(64), nullable=False)
     pw = Column(String(256), nullable=False)
-    status = Column(Enum(UserStatus), native_enum=False, length=50, nullable=False)
+    status = Column(Enum(UserStatus, native_enum=False, length=50), nullable=False, default=UserStatus.ACTIVE)
     payplan_id = Column(ForeignKey("users_pay_plans.id"), nullable=False)
     is_admin = Column(Boolean, nullable=False, default=False)
     api_keys = relationship("APIKeys", back_populates="users")
-    pay_plans = relationship("PayPlans", backref="users")
+    pay_plans = relationship("UserPayPlans", backref="users")
+
+    def __init__ (self, email, pw, payplan_id=None, is_admin=False):
+        self.email = email
+        self.pw = hash_password(pw)
+        self.payplan_id = payplan_id if payplan_id else 1
+        self.is_admin = is_admin
+
+    @classmethod
+    def get(cls, session: Session, id: int = None, **kwargs):
+        if id:
+            return session.query(cls).filter_by(id=id, **kwargs).first()
+        return session.query(cls).filter_by(**kwargs).first()
+
+    @classmethod
+    def get_by_email(cls, session: Session, email: str):
+        return session.query(cls).filter_by(email=email).first()
+
+    @classmethod
+    def update(cls, session: Session, id: int, **kwargs):
+        session.query(cls).filter_by(id=id).update(kwargs)
+        session.commit()
 
 
 class APIKeys(Base):
@@ -45,7 +67,7 @@ class APIKeysWhitelist(Base):
         return session.query(cls).filter_by(ip=ip, api_key_id=api_key_id).first() is not None
 
 
-class UserPayPlan(Base):
+class UserPayPlans(Base):
     __tablename__ = "users_pay_plans"
     name = Column(String(64), nullable=False)
     price = Column(Integer, nullable=False)

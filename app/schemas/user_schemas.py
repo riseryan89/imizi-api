@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import List
 
 
@@ -25,5 +25,5 @@ class UsersRES(BaseModel):
 
 
 class UsersREQ(BaseModel):
-    email: str
+    email: EmailStr
     pw: str
