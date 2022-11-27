@@ -5,7 +5,7 @@ from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, DateTime, E
 from sqlalchemy.orm import relationship, Session
 
 from app.models.base_model import Base
-from app.utils.auth_utils import hash_password, create_token, decode_token
+from app.utils.auth_utils import hash_password, create_token, decode_token, generate_random_string
 from config import get_env
 
 
@@ -81,6 +81,19 @@ class APIKeys(Base):
     deleted_at = Column(DateTime, nullable=True)
     users = relationship("Users", back_populates="api_keys")
     whitelist = relationship("APIKeysWhitelist", backref="api_keys")
+
+    def __init__(self, user_id):
+        self.user_id = user_id
+        self.access_key = generate_random_string(24)
+        self.secret_key = generate_random_string()
+
+    def add(self, session: Session):
+        prev_issued = session.query(APIKeys).filter_by(user_id=self.user_id, deleted_at=None).all()
+        if len(prev_issued) >= 3:
+            return False
+        session.add(self)
+        session.commit()
+        return self
 
 
 class APIKeysWhitelist(Base):

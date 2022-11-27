@@ -17,7 +17,7 @@ async def register(data: schemas.UsersREQ, session: Session = Depends(db.session
     return u
 
 
-@user.post("/get_token", response_model=schemas.Token)
+@user.post("/get-token", response_model=schemas.Token)
 async def get_token(data: schemas.UsersREQ, session: Session = Depends(db.session)):
     u = models.Users.get_by_email(session, data.email)
     if not u:
@@ -30,6 +30,15 @@ async def get_token(data: schemas.UsersREQ, session: Session = Depends(db.sessio
 @user.post("/refresh", response_model=schemas.Token)
 async def refresh_token(data: schemas.RefreshToken, session: Session = Depends(db.session)):
     refresh_payload = decode_token(data.refresh_token)
-    # get id from payload and get user from db
     u = session.query(models.Users).filter_by(id=refresh_payload["id"]).first()
     return u.token_refresh(data.refresh_token)
+
+
+@user.post("/api-keys", response_model=schemas.APIKeysExtendRES)
+async def create_api_key(user_id: int, session: Session = Depends(db.session)):
+    u = session.query(models.Users).filter_by(id=user_id).first()
+    if not u:
+        raise ValueError("존재하지 않는 유저입니다.")
+    api_key = models.APIKeys(user_id=user_id)
+    api_key.add(session)
+    return api_key

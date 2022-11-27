@@ -8,7 +8,9 @@ from pydantic import BaseSettings
 
 class Settings(BaseSettings):
     BASE_DIR: str = path.dirname((path.abspath(__file__)))
-    LOCAL_MODE: bool = True if system().lower().startswith("darwin") or system().lower().startswith("Windows") else False
+    LOCAL_MODE: bool = (
+        True if system().lower().startswith("darwin") or system().lower().startswith("Windows") else False
+    )
     app_name: str = "Imizi API"
     TEST_MODE: bool = False
 
