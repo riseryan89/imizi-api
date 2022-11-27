@@ -1,6 +1,8 @@
 import bcrypt
 from datetime import timedelta, datetime
 import jwt
+import random
+import string
 
 from config import get_env
 
@@ -44,3 +46,8 @@ def is_valid_password(password: str, hashed_password: str):
         return is_verified
     except Exception:
         return False
+
+
+def generate_random_string(length: int = 32):
+    letters = string.ascii_letters + string.digits
+    return "".join(random.choice(letters) for i in range(length))
