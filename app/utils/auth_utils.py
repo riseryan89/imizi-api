@@ -3,6 +3,9 @@ from datetime import timedelta, datetime
 import jwt
 import random
 import string
+import base64
+import hmac
+from datetime import datetime
 
 from config import get_env
 
@@ -51,3 +54,23 @@ def is_valid_password(password: str, hashed_password: str):
 def generate_random_string(length: int = 32):
     letters = string.ascii_letters + string.digits
     return "".join(random.choice(letters) for i in range(length))
+
+
+def parse_params_to_str(params: dict):
+    url = "?"
+    for key, value in params.items():
+        url = url + str(key) + "=" + str(value) + "&"
+    return url[1:-1]
+
+
+def hash_string(params: dict, secret_key: str):
+    mac = hmac.new(
+        bytes(secret_key, encoding="utf8"), bytes(parse_params_to_str(params), encoding="utf-8"), digestmod="sha256"
+    )
+    digest = mac.digest()
+    validating_secret = str(base64.b64encode(digest).decode("utf-8"))
+    return validating_secret
+
+
+def get_current_timestamp():
+    return int(datetime.utcnow().timestamp())
