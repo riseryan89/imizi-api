@@ -26,9 +26,9 @@ def decode_token(token: str):
         payload = jwt.decode(token, conf.JWT_SECRET_KEY, algorithms=conf.JWT_ALGORITHM)
         return payload
     except jwt.ExpiredSignatureError:
-        return Exception("토큰이 만료되었습니다.")
+        raise Exception("토큰이 만료되었습니다.")
     except jwt.InvalidTokenError:
-        return Exception("토큰이 유효하지 않습니다.")
+        raise Exception("토큰이 유효하지 않습니다.")
 
 
 def hash_password(password: str):
