@@ -11,5 +11,22 @@ class NewImageGroupREQ(BaseModel):
 
 
 class ImageGroupRES(BaseModel):
+    id: int
     image_group_name: str
     image_count: int
+
+    class Config:
+        orm_mode = True
+
+
+class ImageInfoRES(BaseModel):
+    id: int
+    image_group: ImageGroupRES
+    uuid: str
+    file_name: str
+    file_extension: str
+    total_file_size: int
+    image_url_data: dict
+
+    class Config:
+        orm_mode = True

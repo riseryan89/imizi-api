@@ -4,16 +4,18 @@ from starlette.requests import Request
 
 from app import models
 from app.db.connection import db
+from app.models import Users
 from app.utils.auth_utils import get_current_timestamp, hash_string
 import asyncio
 
 
 def get_session(func):
     if asyncio.iscoroutinefunction(func):
+
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
             req = kwargs.get("request")
-            get_current_session =hasattr(req.state, "current_session")
+            get_current_session = hasattr(req.state, "current_session")
             if not get_current_session:
                 req.state.current_session = next(db.session())
             return await func(*args, **kwargs)
@@ -35,19 +37,17 @@ async def validate_api_key(request: Request, ts: int, access_key: str, signature
         api_key.secret_key,
     )
     if reproduced_signature != signature:
-        print("signature not match")
-        return False
+        raise ValueError("signature not match")
     if ts < int(get_current_timestamp()) - 5000:
-        print(ts, int(get_current_timestamp()))
-        print("timestamp expired")
-        return False
+        raise ValueError("timestamp expired")
     if ts > int(get_current_timestamp()):
-        print("timestamp not valid")
-        return False
-    return True
+        raise ValueError("timestamp not valid")
+    request.state.user = Users.get(id=api_key.user_id, session=session)
+
 
 async def validate_jwt_token():
     ...
+
 
 async def validate_jwt_admin_token():
     ...

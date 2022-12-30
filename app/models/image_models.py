@@ -8,16 +8,13 @@ from app.models.base_model import Base
 class Images(Base):
     __tablename__ = "images"
     user_id = Column(ForeignKey("users.id"), nullable=False)
-    image_group_id = Column(ForeignKey("image_groups.id"), nullable=False)
+    image_group_id = Column(ForeignKey("images_groups.id"), nullable=False)
     uuid = Column(String(64), nullable=False, default=uuid.uuid4)
-    s3_key = Column(String(256), nullable=False)
     file_name = Column(String(128), nullable=False)
-    file_mime = Column(String(64), nullable=False)
     file_extension = Column(String(16), nullable=False)
-    file_size = Column(Integer, nullable=False)
     total_file_size = Column(Integer, nullable=False)
     image_url_data = Column(JSON, nullable=False)
-    image_group = relationship("ImageGroups", back_populates="images", uselist=False)
+    image_group = relationship("ImageGroups", backref="image_group", uselist=False)
 
 
 class ImageGroups(Base):
@@ -26,5 +23,10 @@ class ImageGroups(Base):
     user_id = Column(ForeignKey("users.id"), nullable=False)
     image_group_name = Column(String(64), nullable=False)
     image_count = Column(Integer, nullable=False, default=0)
-    images = relationship("Images", back_populates="image_groups")
 
+    def add_count(self):
+        self.image_count += 1
+
+    @classmethod
+    def get(cls, session, user_id, image_group_id):
+        return session.query(cls).filter_by(user_id=user_id, id=image_group_id).first()

@@ -63,7 +63,7 @@ def get_image_file_size(image):
     return len(buffered.getvalue())
 
 
-def s3_upload(image, file_name):
+def s3_upload(image, file_name, image_group):
     conf = get_env()
     s3 = boto3.client(
         "s3",
@@ -75,9 +75,9 @@ def s3_upload(image, file_name):
     image.save(buffered, format="WEBP")
     s3.put_object(
         Bucket=conf.AWS_BUCKET_NAME,
-        Key=f"{file_name}",
+        Key=f"{image_group.uuid}/{file_name}",
         Body=buffered.getvalue(),
         ACL="public-read",
         ContentType="image/webp",
     )
-    return f"https://{conf.AWS_BUCKET_NAME}.s3.{conf.AWS_REGION}.amazonaws.com/{file_name}"
+    return f"https://{conf.AWS_BUCKET_NAME}.s3.{conf.AWS_REGION}.amazonaws.com/{image_group.uuid}/{file_name}"
