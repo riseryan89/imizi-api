@@ -1,4 +1,5 @@
 import asyncio
+import time
 
 from fastapi import APIRouter, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
@@ -57,20 +58,20 @@ async def upload_image(
     return image_model
 
 
-@image.post("/bg-task")
+@image.post("/bg-task", status_code=202)
 async def bg_task_test(
     bg_task: BackgroundTasks,
     session: Session = Depends(db.session),
 ):
-    # await background_task(session)
+    # background_task(session)
     bg_task.add_task(background_task, session)
     return {"message": "background task started"}
 
 
-async def background_task(session):
+def background_task(session):
+    time.sleep(5)
     session.query(models.ImageGroups).update({models.ImageGroups.updated_at: "1999-01-05 00:00:00"})
     session.commit()
-    await asyncio.sleep(3)
 
 
 @image.get("/{image_id}")
