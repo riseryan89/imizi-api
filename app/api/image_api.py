@@ -8,6 +8,7 @@ from uuid import uuid4
 from app import models, schemas
 from app.db.connection import db
 from app.depends.validate_api_key import validate_api_key
+from app.exceptions.excpetions import NotFoundException
 from app.utils.image_utils import (
     get_image_size,
     resize_image,
@@ -33,7 +34,9 @@ async def upload_image(
     image_group = models.ImageGroups.get(session, request.state.user.id, image_group_id)
 
     if not image_group:
-        raise ValueError("image group not found")
+        raise NotFoundException("Image Group Not Found")
+
+        # raise ValueError("image group not found")
     image_convert_size = [512, 1024, 1920]
     image_size = get_image_size(body.image_base64)
     image_extension = get_image_extension(body.image_base64)
