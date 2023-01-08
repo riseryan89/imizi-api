@@ -10,10 +10,11 @@ import asyncio
 
 def get_session(func):
     if asyncio.iscoroutinefunction(func):
+
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
             req = kwargs.get("request")
-            get_current_session =hasattr(req.state, "current_session")
+            get_current_session = hasattr(req.state, "current_session")
             if not get_current_session:
                 req.state.current_session = next(db.session())
             return await func(*args, **kwargs)
@@ -46,8 +47,10 @@ async def validate_api_key(request: Request, ts: int, access_key: str, signature
         return False
     return True
 
+
 async def validate_jwt_token():
     ...
+
 
 async def validate_jwt_admin_token():
     ...

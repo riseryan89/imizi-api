@@ -25,17 +25,17 @@ def upload_image(
     :return:
     """
     image_convert_size = [512, 1024, 1920]
-    image_size = get_image_size(body.image)
-    image_extension = get_image_extension(body.image)
+    image_size = get_image_size(body.image_base64)
+    image_extension = get_image_extension(body.image_base64)
     uuid = str(uuid4())
-    thumbnail, file_size = get_squared_thumbnail(body.image)
+    thumbnail, file_size = get_squared_thumbnail(body.image_base64)
 
     images = {"thumbnail": thumbnail}
     total_size = file_size
 
     for size in image_convert_size:
         if image_size[0] > size:
-            resized_image, file_size = resize_image(body.image, size)
+            resized_image, file_size = resize_image(body.image_base64, size)
             total_size += file_size
             images[size] = resized_image
 

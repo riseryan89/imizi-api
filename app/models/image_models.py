@@ -27,4 +27,3 @@ class ImageGroups(Base):
     image_group_name = Column(String(64), nullable=False)
     image_count = Column(Integer, nullable=False, default=0)
     images = relationship("Images", back_populates="image_groups")
-
