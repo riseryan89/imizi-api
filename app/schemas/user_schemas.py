@@ -5,7 +5,7 @@ from typing import List
 class APIKeysRES(BaseModel):
     id: int
     access_key: str
-    whitelist_ips: str | None
+    whitelist_ips: str = None
 
     class Config:
         orm_mode = True
@@ -26,7 +26,7 @@ class UsersRES(BaseModel):
 
 class Token(BaseModel):
     access_token: str
-    refresh_token: str | None
+    refresh_token: str = None
 
 
 class RefreshToken(BaseModel):

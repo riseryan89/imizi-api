@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.db.connection import db
 from app.models import Base, UserPayPlans
-from main import start_app
+from application import start_app
 
 
 @pytest.fixture(scope="package")
