@@ -23,6 +23,7 @@ class AccessControl(BaseHTTPMiddleware):
         try:
             return await call_next(request)
         except Exception as e:
+            # raise e
             if not isinstance(e, ImiziException):
                 return JSONResponse({"message": "Internal Server Error"}, status_code=500)
             else:

@@ -5,10 +5,18 @@ from sqlalchemy.orm import relationship
 from app.models.base_model import Base
 
 
+class ImageGroups(Base):
+    __tablename__ = "images_groups"
+    uuid = Column(String(64), nullable=False, default=uuid.uuid4)
+    user_id = Column(ForeignKey("users.id"), nullable=False)
+    image_group_name = Column(String(64), nullable=False)
+    image_count = Column(Integer, nullable=False, default=0)
+
+
 class Images(Base):
     __tablename__ = "images"
     user_id = Column(ForeignKey("users.id"), nullable=False)
-    image_group_id = Column(ForeignKey("images_groups.id"), nullable=False)
+    image_group_id = Column(ForeignKey(ImageGroups.id), nullable=False)
     uuid = Column(String(64), nullable=False, default=uuid.uuid4)
     file_name = Column(String(128), nullable=False)
     file_extension = Column(String(16), nullable=False)
@@ -17,12 +25,7 @@ class Images(Base):
     image_group = relationship("ImageGroups", backref="image_group", uselist=False)
 
 
-class ImageGroups(Base):
-    __tablename__ = "images_groups"
-    uuid = Column(String(64), nullable=False, default=uuid.uuid4)
-    user_id = Column(ForeignKey("users.id"), nullable=False)
-    image_group_name = Column(String(64), nullable=False)
-    image_count = Column(Integer, nullable=False, default=0)
+
 
     def add_count(self):
         self.image_count += 1

@@ -40,7 +40,8 @@ class DevSettings(Settings):
 
 
 class TestSettings(Settings):
-    DB_URL = "mysql+pymysql://imizi_app:imizi_app_dev1@localhost:3306/imizi?charset=utf8mb4"
+    TEST_MODE = True
+    DB_URL = "mysql+pymysql://imizi_app:imizi_app_dev1@localhost:3306/imz_test?charset=utf8mb4"
     DB_POOL_SIZE = 1
     DB_MAX_OVERFLOW = 0
 

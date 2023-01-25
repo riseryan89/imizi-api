@@ -30,6 +30,20 @@ class NotFoundException(ImiziException):
     def __init__(
         self,
         msg,
+        status_code=404,
+        ex: Exception = None,
+    ):
+        super().__init__(
+            status_code=status_code,
+            msg=msg,
+            ex=ex,
+        )
+
+
+class BadRequestException(ImiziException):
+    def __init__(
+        self,
+        msg,
         status_code=400,
         ex: Exception = None,
     ):
