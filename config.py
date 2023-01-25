@@ -34,7 +34,7 @@ class Settings(BaseSettings):
 
 
 class DevSettings(Settings):
-    DB_URL = "mysql+pymysql://imizi_app:imizi_app_dev1@localhost:3306/imizi?charset=utf8mb4"
+    DB_URL = f"mysql+pymysql://{os.getenv('DB_INFO')}/imizi?charset=utf8mb4"
     DB_POOL_SIZE = 5
     DB_MAX_OVERFLOW = 10
 
