@@ -20,12 +20,21 @@ class UserStatus(str, enum.Enum):
     DELETED = "DELETED"
 
 
+class UserPayPlans(Base):
+    __tablename__ = "users_pay_plans"
+    name = Column(String(64), nullable=False)
+    price = Column(Integer, nullable=False)
+    max_image_count = Column(Integer, nullable=False)
+    max_image_size = Column(Integer, nullable=False)
+    max_image_group_count = Column(Integer, nullable=False)
+
+
 class Users(Base):
     __tablename__ = "users"
     email = Column(String(64), nullable=False)
     pw = Column(String(256), nullable=False)
     status = Column(Enum(UserStatus, native_enum=False, length=50), nullable=False, default=UserStatus.ACTIVE)
-    payplan_id = Column(ForeignKey("users_pay_plans.id"), nullable=False)
+    payplan_id = Column(ForeignKey(UserPayPlans.id), nullable=False)
     is_admin = Column(Boolean, nullable=False, default=False)
     api_keys = relationship("APIKeys", back_populates="users")
     pay_plans = relationship("UserPayPlans", backref="users")
@@ -80,7 +89,7 @@ class Users(Base):
 
 class APIKeys(Base):
     __tablename__ = "users_api_keys"
-    user_id = Column(ForeignKey("users.id"), nullable=False)
+    user_id = Column(ForeignKey(Users.id), nullable=False)
     access_key = Column(String(64), nullable=False)
     secret_key = Column(String(64), nullable=False)
     deleted_at = Column(DateTime, nullable=True)
@@ -108,7 +117,7 @@ class APIKeys(Base):
 
 class APIKeysWhitelist(Base):
     __tablename__ = "users_api_keys_whitelist"
-    api_key_id = Column(ForeignKey("users_api_keys.id"), nullable=False)
+    api_key_id = Column(ForeignKey(APIKeys.id), nullable=False)
     ip = Column(String(64), nullable=False)
 
     @classmethod
@@ -116,12 +125,3 @@ class APIKeysWhitelist(Base):
         if not session.query(cls).filter_by(api_key_id=api_key_id).first():
             return True
         return session.query(cls).filter_by(ip=ip, api_key_id=api_key_id).first() is not None
-
-
-class UserPayPlans(Base):
-    __tablename__ = "users_pay_plans"
-    name = Column(String(64), nullable=False)
-    price = Column(Integer, nullable=False)
-    max_image_count = Column(Integer, nullable=False)
-    max_image_size = Column(Integer, nullable=False)
-    max_image_group_count = Column(Integer, nullable=False)
