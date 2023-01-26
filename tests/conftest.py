@@ -19,7 +19,7 @@ def client():
     os.environ["FASTAPI_ENV"] = "test"
 
     app = start_app()
-    Base.metadata.create_all(db.engine)
+    prepare_db()
     with TestClient(app=app, base_url="http://localhost:8000") as client:
         yield client
 
