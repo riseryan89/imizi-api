@@ -2,20 +2,21 @@ import uuid
 from sqlalchemy import Column, String, ForeignKey, JSON, Integer
 from sqlalchemy.orm import relationship
 
+from app.models import Users
 from app.models.base_model import Base
 
 
 class ImageGroups(Base):
     __tablename__ = "images_groups"
     uuid = Column(String(64), nullable=False, default=uuid.uuid4)
-    user_id = Column(ForeignKey("users.id"), nullable=False)
+    user_id = Column(ForeignKey(Users.id), nullable=False)
     image_group_name = Column(String(64), nullable=False)
     image_count = Column(Integer, nullable=False, default=0)
 
 
 class Images(Base):
     __tablename__ = "images"
-    user_id = Column(ForeignKey("users.id"), nullable=False)
+    user_id = Column(ForeignKey(Users.id), nullable=False)
     image_group_id = Column(ForeignKey(ImageGroups.id), nullable=False)
     uuid = Column(String(64), nullable=False, default=uuid.uuid4)
     file_name = Column(String(128), nullable=False)
