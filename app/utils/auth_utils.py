@@ -33,7 +33,7 @@ def decode_token(token: str):
 
 
 def hash_password(password: str):
-    if 20 < len(password) < 8:
+    if 20 < len(password) or len(password) < 8:
         raise BadRequestException("패스워드의 길이는 8자 보다 길고 20자 보다 짧아야 합니다.")
     if not any(char.isdigit() for char in password):
         raise BadRequestException("패스워드에 최소한 1개 이상의 숫자가 포함되어야 합니다.")
